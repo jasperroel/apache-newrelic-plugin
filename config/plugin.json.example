@@ -1,0 +1,18 @@
+{
+  "agents": [
+    {
+      "host" : "<minimal is just a host>"
+    },
+    {
+      "host" : "<you can also combine a host and a port>",
+      "port" : 8080
+    },
+    {
+      "name" : "<your custom name>",
+      "protocol" : "<http or https>",
+      "host" : "<your hostname>",
+      "port" : 443,
+      "modStatusUrl" : "/server-status?auto"
+    }
+  ]
+}
