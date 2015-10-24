@@ -25,85 +25,164 @@
  ******************************************************************************/
 package com.salesforce.newrelic.plugin.apache;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
+ * <p>This class deals with parsing and representing the Scoreboard overview from an Apache /server-status request.</p>
+ * 
+ * <p>The Scoreboard is an overview of the current status of the various Workers in an Apache instance.</p>
  * 
  * @author Jasper Roel - jasperroel@gmail.com
  * @since Oct 21, 2015
  * @version 1.0.0
- *
+ * 
  */
 public class ApacheScoreboard {
-//	  '_': {'type': 'gauge', 'label': 'Scoreboard/Waiting For Conn', 'suffix': 'slots'},
-//    'S': {'type': 'gauge', 'label': 'Scoreboard/Starting Up', 'suffix': 'slots'},
-//    'R': {'type': 'gauge', 'label': 'Scoreboard/Reading Request', 'suffix': 'slots'},
-//    'W': {'type': 'gauge', 'label': 'Scoreboard/Sending Reply', 'suffix': 'slots'},
-//    'K': {'type': 'gauge', 'label': 'Scoreboard/Keepalive Read', 'suffix': 'slots'},
-//    'D': {'type': 'gauge', 'label': 'Scoreboard/DNS Lookup', 'suffix': 'slots'},
-//    'C': {'type': 'gauge', 'label': 'Scoreboard/Closing Conn', 'suffix': 'slots'},
-//    'L': {'type': 'gauge', 'label': 'Scoreboard/Logging', 'suffix': 'slots'},
-//    'G': {'type': 'gauge', 'label': 'Scoreboard/Gracefully Finishing', 'suffix': 'slots'},
-//    'I': {'type': 'gauge', 'label': 'Scoreboard/Idle Cleanup', 'suffix': 'slots'},
-//    '.': {'type': 'gauge', 'label': 'Scoreboard/Open Slot', 'suffix': 'slots'}}
-	
-	public long waitinForConn; // _
-	public long startingUp; // S
-	public long readingRequest; // R
-	public long sendingReply; // W
-	public long keepaliveRead; // K
-	public long dnsLookup; // D
-	public long closingConn; // C
-	public long logging; // L
-	public long gracefullyFinishing; // G
-	public long idleCleanup; // I
-	public long openSlot; // .
-	
-	public static ApacheScoreboard parseScoreboard(String scoreboard) {
-		ApacheScoreboard result = new ApacheScoreboard();
-		
-		char[] chars =scoreboard.toCharArray();
-		for (char c :chars) {
-			String s = Character.toString(c);
-			if ("_".equals(s)) {
-				result.waitinForConn++;
-			}
-			if ("S".equals(s)) {
-				result.startingUp++;
-			}
-			if ("R".equals(s)) {
-				result.readingRequest++;
-			}
-			if ("W".equals(s)) {
-				result.sendingReply++;
-			}
-			if ("K".equals(s)) {
-				result.keepaliveRead++;
-			}
-			if ("D".equals(s)) {
-				result.dnsLookup++;
-			}
-			if ("C".equals(s)) {
-				result.closingConn++;
-			}
-			if ("L".equals(s)) {
-				result.logging++;
-			}
-			if ("G".equals(s)) {
-				result.gracefullyFinishing++;
-			}
-			if ("I".equals(s)) {
-				result.idleCleanup++;
-			}
-			if (".".equals(s)) {
-				result.openSlot++;
-			}
-		}
-		return result;
-	}
-	
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    private long waitinForConn; // _
+    private long startingUp; // S
+    private long readingRequest; // R
+    private long sendingReply; // W
+    private long keepaliveRead; // K
+    private long dnsLookup; // D
+    private long closingConn; // C
+    private long logging; // L
+    private long gracefullyFinishing; // G
+    private long idleCleanup; // I
+    private long openSlot; // .
+
+    /**
+     * <p>Parses a Scoreboard string and returns an {@link ApacheScoreboard}.<br />
+     * 
+     * @param scoreboard This should match the Scoreboard only (no "Scoreboard: "), so something like <code>GGW..__</code>
+     * @return {@link ApacheScoreboard}, if the string is empty, this will return an empty {@link ApacheScoreboard}.
+     */
+    public static ApacheScoreboard parseScoreboard(String scoreboard) {
+        ApacheScoreboard result = new ApacheScoreboard();
+
+        if (StringUtils.isEmpty(scoreboard)) {
+            return result;
+        }
+
+        char[] chars = scoreboard.toCharArray();
+        for (char c : chars) {
+            String s = Character.toString(c);
+            if ("_".equals(s)) {
+                result.waitinForConn++;
+            }
+            if ("S".equals(s)) {
+                result.startingUp++;
+            }
+            if ("R".equals(s)) {
+                result.readingRequest++;
+            }
+            if ("W".equals(s)) {
+                result.sendingReply++;
+            }
+            if ("K".equals(s)) {
+                result.keepaliveRead++;
+            }
+            if ("D".equals(s)) {
+                result.dnsLookup++;
+            }
+            if ("C".equals(s)) {
+                result.closingConn++;
+            }
+            if ("L".equals(s)) {
+                result.logging++;
+            }
+            if ("G".equals(s)) {
+                result.gracefullyFinishing++;
+            }
+            if ("I".equals(s)) {
+                result.idleCleanup++;
+            }
+            if (".".equals(s)) {
+                result.openSlot++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return the waitinForConn
+     */
+    public long getWaitinForConn() {
+        return waitinForConn;
+    }
+
+    /**
+     * @return the startingUp
+     */
+    public long getStartingUp() {
+        return startingUp;
+    }
+
+    /**
+     * @return the readingRequest
+     */
+    public long getReadingRequest() {
+        return readingRequest;
+    }
+
+    /**
+     * @return the sendingReply
+     */
+    public long getSendingReply() {
+        return sendingReply;
+    }
+
+    /**
+     * @return the keepaliveRead
+     */
+    public long getKeepaliveRead() {
+        return keepaliveRead;
+    }
+
+    /**
+     * @return the dnsLookup
+     */
+    public long getDnsLookup() {
+        return dnsLookup;
+    }
+
+    /**
+     * @return the closingConn
+     */
+    public long getClosingConn() {
+        return closingConn;
+    }
+
+    /**
+     * @return the logging
+     */
+    public long getLogging() {
+        return logging;
+    }
+
+    /**
+     * @return the gracefullyFinishing
+     */
+    public long getGracefullyFinishing() {
+        return gracefullyFinishing;
+    }
+
+    /**
+     * @return the idleCleanup
+     */
+    public long getIdleCleanup() {
+        return idleCleanup;
+    }
+
+    /**
+     * @return the openSlot
+     */
+    public long getOpenSlot() {
+        return openSlot;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
