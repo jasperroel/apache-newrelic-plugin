@@ -101,13 +101,18 @@ public class ApacheMonitorAgent extends Agent {
      * @return The raw data from the URL provided. Returns null is an IOException occurs
      */
     private String collectApacheData() {
+        HttpURLConnection conn = null;
         try {
             URL url = new URL(protocol, host, port, modStatusUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
             return IOUtils.toString(conn.getInputStream());
         } catch (IOException e) {
             logger.error("[", agentName, "] Could not parse server-status, error: " + e.getMessage());
             return null;
+        } finally {
+            if (null != conn) {
+                conn.disconnect();
+            }
         }
     }
 
