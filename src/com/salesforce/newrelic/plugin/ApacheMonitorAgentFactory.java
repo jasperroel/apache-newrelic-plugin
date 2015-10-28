@@ -26,6 +26,7 @@
 package com.salesforce.newrelic.plugin;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.newrelic.metrics.publish.Agent;
 import com.newrelic.metrics.publish.AgentFactory;
@@ -50,6 +51,7 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
     private final String defaultProtocol = "http";
     private final int defaultPort = 80;
     private final String defaultModStatusUrl = "/server-status?auto";
+    private final int defaultConnectionTimeout  = (int) TimeUnit.SECONDS.toMillis(15);
 
     private final String agentNameProperty = "name";
     private final String hostProperty = "host";
@@ -68,6 +70,7 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
         String protocol = defaultProtocol;
         int port = defaultPort;
         String modStatusUrl = defaultModStatusUrl;
+        int connectionTimeout = defaultConnectionTimeout;
 
         if (null == host) {
             throw new ConfigurationException("'" + hostProperty + "' property cannot be null.");
@@ -103,6 +106,6 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
             }
         }
 
-        return new ApacheMonitorAgent(agentName, protocol, host, port, modStatusUrl);
+        return new ApacheMonitorAgent(agentName, protocol, host, port, modStatusUrl, connectionTimeout);
     }
 }
