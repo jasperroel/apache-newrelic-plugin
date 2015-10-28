@@ -25,6 +25,9 @@ You can get the JAR file by
 3. compiling it into a JAR file
 4. Creating the configuration file
 
+Or, alternatively, you can use the jar files in the dist/ folder and skip straight
+to step 4.
+
 ### Configuration
 
 Configuration is done through plugin.json and newrelic.json.
@@ -64,7 +67,9 @@ For easy (default) configuration, you can leave everything but the```host``` out
       "protocol" : "<http or https>",
       "host" : "<your hostname>",
       "port" : 443,
-      "modStatusUrl" : "/server-status?auto"
+      "modStatusUrl" : "/server-status?auto",
+      "connectionTimeout" : <connection timeout in milliseconds>,
+      "readTimeout" : <read timeout in milliseconds>
     },
     ...
   ]
@@ -76,6 +81,8 @@ The default values are:
 * port: 80
 * protocol: http
 * modStatusUrl: /server-status?auto
+* connectionTimeout: 15 seconds (or 15000 for the value in milliseconds)
+* readTimeout: 15 seconds (or 15000 for the value in milliseconds)
 
 For example, you can easily monitor www.apache.org through this config:
 

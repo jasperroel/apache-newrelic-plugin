@@ -62,8 +62,9 @@ public class ApacheMonitorAgent extends Agent {
     private final String host;
     private final int port;
     private final String modStatusUrl;
-    
-    private final int connectionTimeout;
+
+    private int connectionTimeout;
+    private int readTimeout;
 
     /**
      * <p>Creates an ApacheMonitorAgent. All parameter are required.</p>
@@ -74,14 +75,13 @@ public class ApacheMonitorAgent extends Agent {
      * @param port The port (usually 80 or 443)
      * @param modStatusUrl The URL where to retrieve the data (usually "/server-status?auto")
      */
-    public ApacheMonitorAgent(String agentName, String protocol, String host, int port, String modStatusUrl, int connectionTimeout) {
+    public ApacheMonitorAgent(String agentName, String protocol, String host, int port, String modStatusUrl) {
         super(GUID, version);
         this.agentName = agentName;
         this.protocol = protocol;
         this.host = host;
         this.port = port;
         this.modStatusUrl = modStatusUrl;
-        this.connectionTimeout = connectionTimeout;
 
         logger.info("Agent initialized with: "
             + "agentName=" + agentName
@@ -106,18 +106,15 @@ public class ApacheMonitorAgent extends Agent {
     private String collectApacheData() {
         HttpURLConnection conn = null;
         try {
-            logger.debug("[", agentName, "] Starting collection cycle");
             URL url = new URL(protocol, host, port, modStatusUrl);
-            logger.debug("[", agentName, "] Opening connection... ");
             conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(connectionTimeout);
-            logger.debug("[", agentName, "] ... Connection opened, getting result..");
+            conn.setReadTimeout(readTimeout);
             return IOUtils.toString(conn.getInputStream());
         } catch (IOException e) {
             logger.error(e, "[", agentName, "] Could not parse server-status, error: " + e.getMessage());
             return null;
         } finally {
-            logger.debug("[", agentName, "] ... Result gotten (or an exception), closing connection");
             if (null != conn) {
                 conn.disconnect();
             }
@@ -184,4 +181,32 @@ public class ApacheMonitorAgent extends Agent {
     public String getAgentName() {
         return agentName;
     }
+
+	/**
+	 * @return the connectionTimeout
+	 */
+	public int getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	/**
+	 * @param connectionTimeout the connectionTimeout to set
+	 */
+	public void setConnectionTimeout(int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	/**
+	 * @return the readTimeout
+	 */
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	/**
+	 * @param readTimeout the readTimeout to set
+	 */
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
+	}
 }

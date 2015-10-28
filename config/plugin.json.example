@@ -12,7 +12,9 @@
       "protocol" : "<http or https>",
       "host" : "<your hostname>",
       "port" : 443,
-      "modStatusUrl" : "/server-status?auto"
+      "modStatusUrl" : "/server-status?auto",
+      "connectionTimeout" : 15000,
+      "readTimeout" : 15000
     }
   ]
 }

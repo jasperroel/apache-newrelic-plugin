@@ -52,12 +52,16 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
     private final int defaultPort = 80;
     private final String defaultModStatusUrl = "/server-status?auto";
     private final int defaultConnectionTimeout  = (int) TimeUnit.SECONDS.toMillis(15);
+    private final int defaultReadTimeout  = (int) TimeUnit.SECONDS.toMillis(15);
 
     private final String agentNameProperty = "name";
     private final String hostProperty = "host";
     private final String portProperty = "port";
     private final String modStatusProperty = "modStatusUrl";
     private final String protocolProperty = "protocol";
+    private final String connectionTimeoutProperty = "connectionTimeout";
+    private final String readTimeoutProperty = "readTimeout";
+    
 
     /**
      * <p>Creates a {@link ApacheMonitorAgent} for each (valid) agent configured in <code>plugin.json<code>.
@@ -70,7 +74,9 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
         String protocol = defaultProtocol;
         int port = defaultPort;
         String modStatusUrl = defaultModStatusUrl;
+        
         int connectionTimeout = defaultConnectionTimeout;
+        int readTimeout = defaultReadTimeout;
 
         if (null == host) {
             throw new ConfigurationException("'" + hostProperty + "' property cannot be null.");
@@ -83,18 +89,22 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
         if (properties.containsKey(protocolProperty)) {
             protocol = (String) properties.get(protocolProperty);
         }
+        if (properties.containsKey(connectionTimeoutProperty)) {
+        	connectionTimeout = (int) getLongFromProperty(properties, connectionTimeoutProperty);
+        }
+        if (properties.containsKey(readTimeoutProperty)) {
+        	readTimeout = (int) getLongFromProperty(properties, readTimeoutProperty);
+        }
+        
         if (properties.containsKey(portProperty)) {
             // Agreed, this doesn't look pretty, but it works.
             // JSON parses the value as a "Long", so we cast it down to an int "gracefully"
-            Object portObject = properties.get(portProperty);
-            if (null != portObject && portObject.getClass().isAssignableFrom(Long.class)) {
-                long portL = (Long) portObject;
-                // Only assign port if it's in a valid range
-                if (portL > 0 && portL <= 65535) {
-                    port = (int) portL;
-                } else {
-                    logger.warn(portL, " is not a valid port for host ", host, ", defaulting to ", port);
-                }
+            long portL = getLongFromProperty(properties, portProperty);
+            // Only assign port if it's in a valid range
+            if (portL > 0 && portL <= 65535) {
+                port = (int) portL;
+            } else {
+                logger.warn(portL, " is not a valid port for host ", host, ", defaulting to ", port);
             }
         }
 
@@ -106,6 +116,17 @@ public class ApacheMonitorAgentFactory extends AgentFactory {
             }
         }
 
-        return new ApacheMonitorAgent(agentName, protocol, host, port, modStatusUrl, connectionTimeout);
+        ApacheMonitorAgent agent = new ApacheMonitorAgent(agentName, protocol, host, port, modStatusUrl);
+        agent.setConnectionTimeout(connectionTimeout);
+        agent.setReadTimeout(readTimeout);
+        return agent;
+    }
+    
+    private long getLongFromProperty(Map<String, Object> properties, String propertyName) {
+        Object portObject = properties.get(portProperty);
+        if (null != portObject && portObject.getClass().isAssignableFrom(Long.class)) {
+            return (Long) portObject;
+        }
+        return 0L;
     }
 }
